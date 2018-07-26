@@ -34,11 +34,17 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 	var winnerCount int
 	var timeout time.Duration
 
-	SendEmbed(s, c.ID, "**Enter the content message of the giveaway:**")
+	SendEmbed(s, c.ID, "**Enter the content message of the giveaway:**\n*Enter `exit` to cancle.*")
 
 	var remover func()
 	remover =  s.AddHandler(func(_ *discordgo.Session, msg *discordgo.MessageCreate) {
 		if msg.ChannelID != c.ID || msg.Author.ID != a.ID {
+			return
+		}
+
+		if msg.Content == "exit" {
+			SendEmbed(s, c.ID, "Canceled.")
+			remover()
 			return
 		}
 
@@ -47,11 +53,11 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 		case 0:
 			content = msg.Content
 			currentStatus++
-			SendEmbed(s, c.ID, "**Enter the message, which will appear in the direct message of the winner after expire:**")
+			SendEmbed(s, c.ID, "**Enter the message, which will appear in the direct message of the winner after expire:**\n*Enter `exit` to cancle.*")
 		case 1:
 			winMessage = msg.Content
 			currentStatus++
-			SendEmbed(s, c.ID, "**Now, enter the number of participant who can win in the giveaway:**")
+			SendEmbed(s, c.ID, "**Now, enter the number of participant who can win in the giveaway:**\n*Enter `exit` to cancle.*")
 		case 2:
 			winnerCount, err = strconv.Atoi(msg.Content)
 			if err != nil {
@@ -59,7 +65,7 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 				return
 			}
 			currentStatus++
-			SendEmbed(s, c.ID, "**Now, enter the expire time of the giveaway:**\n*(i.e. '30m', '4h' or '48 h')*")
+			SendEmbed(s, c.ID, "**Now, enter the expire time of the giveaway:**\n*(i.e. '30m', '4h' or '48 h')*\n*Enter `exit` to cancle.*")
 		case 3:
 			_nr, err := strconv.Atoi(regexp.MustCompile("\\d*").FindString(msg.Content))
 			if err != nil {
@@ -76,8 +82,7 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 				SendEmbedError(s, c.ID, "Invalid input.\n**Please enter again:**")
 				return
 			}
-			ga, err := NewGiveaway(s, a, c, winnerCount, content, winMessage, timeout, config.Data.Emote)
-			fmt.Println(ga, err)
+			NewGiveaway(s, a, c, winnerCount, content, winMessage, timeout, config.Data.Emote)
 			remover()
 		}
 	})

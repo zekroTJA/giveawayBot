@@ -4,3 +4,5 @@ config.yaml
 *.bin
 *.tmp
 .vc/*
+screenlog.*
+build/*
