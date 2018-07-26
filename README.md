@@ -5,7 +5,7 @@
      <br>
      <br>
      <a href="https://travis-ci.org/zekroTJA/giveawayBot"><img src="https://travis-ci.org/zekroTJA/giveawayBot.svg?branch=master"/></a>&nbsp;
-     <a class="badge-align" href="https://www.codacy.com/app/zekroTJA/giveawayBot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=zekroTJA/serverManager2&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/a0d09c2e78f748e2ab81a236baeb5b44"/></a>&nbsp;
+     <a class="badge-align" href="https://www.codacy.com/app/zekroTJA/giveawayBot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=zekroTJA/serverManager2&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/ab73367da2154d6db55c0efb4f44907f"/></a>&nbsp;
      <a href="https://github.com/zekroTJA/serverManager2/releases"><img src="https://img.shields.io/github/release/zekroTJA/giveawayBot/all.svg"/></a>
  </div>
 
