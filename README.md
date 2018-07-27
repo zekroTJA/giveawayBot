@@ -1,6 +1,6 @@
  <div align="center">
-     <h1>~ ServerManager2 ~</h1>
-     <strong>faster, harder, stronger</strong><br><br>
+     <h1>~ giveawayBot ~</h1>
+     <strong>A little Discord bot focusing on creating giveaways engagable with reactions.</strong><br><br>
      <img src="https://forthebadge.com/images/badges/made-with-go.svg" height="25"/>
      <br>
      <br>
