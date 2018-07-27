@@ -1,0 +1,71 @@
+# LANGUAGE EN-US
+# ORIGINAL - by zekro Development
+
+commands:
+  giveaway:
+    invalidinput: |
+      Invalid input.
+      **Please enter again:**
+    entercontent: |
+      **Enter the content message of the giveaway:**
+      *Enter `exit` to cancle.*
+    enterwinmessage: |
+      **Enter the message, which will appear in the direct message of the winner after expire:**
+      *Enter `exit` to cancle.*
+    enterparticipantsnumber: |
+      **Now, enter the number of participant who can win in the giveaway:**
+      *Enter `exit` to cancle.*
+    enterexpiretime: |
+      **Now, enter the expire time of the giveaway:**
+      *(i.e. '30m', '4h' or '48 h')*
+      *Enter `exit` to cancle.*
+    enterchannelresolvable: |
+      **At last, enter a channel resolvable to send the giveaway in:**
+      *name ('general'), ID ('333707989145729420'), mention ('#general')*
+      *Enter `exit` to cancle.*
+    creatingfailed: |
+      Creating giveaway failed:
+      ```
+      %s
+      ```
+    created: |
+      Giveaway created in channel <#%s>.
+      
+classes:
+  giveaway:
+    activemessage:
+      title: |
+        OPEN GIVEAWAY
+      participateinfo: |
+        *Participate to this Giveaway by reacting to this message below.*
+      expires: |
+        Expires on %s.
+    closedmessage:
+      title: |
+        GIVEAWAY CLOSED
+      winners: |
+        **Winners:**
+        ```
+        %s
+        ```
+      noparticipants: |
+        **No winners. To less participants.**
+      expired: |
+        Expired.
+    creatordm:
+      noparticipations: |
+        Giveaway *(ID: `%s`)* ended with no result because to less people participated to it.
+      final: |
+        Giveaway with UID `%s` expired.
+        
+        **Participants:** `%d`
+        **Winners:**
+        ```
+        %s
+        ```
+    notifications:
+      multiparticipation: |
+        You can only participate once on a giveaway!
+      participated: |
+        You have participated to the giveaway.
+        If you will win, you will get a notification via direct message.

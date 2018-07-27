@@ -8,8 +8,10 @@ import (
 
 type ConfigData struct {
 	Token      string   `yaml:"token"`
+	Prefix     string   `yaml:"prefix"`
 	Emote      string   `yaml:"emote"`
 	Authorized []string `yaml:"authorized"`
+	Language   string   `yaml:"language"`
 }
 
 type Config struct {

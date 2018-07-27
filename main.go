@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "fmt"
+	//"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -9,6 +9,7 @@ import (
 )
 
 var Cmd *CmdHandler
+var Lang *Language
 
 func main() {
 
@@ -17,11 +18,14 @@ func main() {
 	config, err := NewConfig("config.yaml")
 	CheckError(err, false)
 
+	Lang, err = NewLanguage(config)
+	CheckError(err, false)
+
 	session, err := discordgo.New("Bot " + config.Data.Token)
 	CheckError(err, false)
 
 	//////////// COMMAND REGISTRATION ///////////
-	Cmd = NewCmdHandler(session, config, ";")
+	Cmd = NewCmdHandler(session, config, config.Data.Prefix)
 	Cmd.Register("test", CmdTest)
 	Cmd.Register("ga", CmdGiveaway)
 	////////////////////////////////////////////

@@ -10,17 +10,18 @@ import (
 
 
 type Giveaway struct {
-	UID          	string
-	Creator      	*discordgo.User
-	Message      	*discordgo.Message
-	Channel      	*discordgo.Channel
-	Content      	string
-	WinnerCount  	int
-	WinMessage   	string
-	Timeout      	time.Duration
-	Timer 		 	*time.Timer
-	HandlerRemover  func()
-	Participants    map[string]*discordgo.User
+	UID          	    string
+	Creator      	    *discordgo.User
+	Message      	    *discordgo.Message
+	Channel      	    *discordgo.Channel
+	Content      	    string
+	WinnerCount  	    int
+	WinMessage   	    string
+	Timeout      	    time.Duration
+	Timer 		 	    *time.Timer
+	HandlerRemover      func()
+	Participants        map[string]*discordgo.User
+	ParticipantsNumber  int
 }
 
 
@@ -31,11 +32,11 @@ func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *d
 	expires := time.Now().Add(timeout).Format(time.RFC1123)
 
 	embed := &discordgo.MessageEmbed{
-		Title:  		"OPEN GIVEAWAY",
-		Description:	content + "\n\n*Participate to this Giveaway by reacting to this message below.*",
+		Title:  		Lang.Classes.Giveaway.ActiveMessage.Title,
+		Description:	content + "\n\n" + Lang.Classes.Giveaway.ActiveMessage.ParticipateInfo,
 		Color: 			COLOR_MAIN,
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: 		"Expires on " + expires,
+			Text: 		fmt.Sprintf(Lang.Classes.Giveaway.ActiveMessage.Expires, expires),
 		},
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:		creator.Username,
@@ -56,19 +57,19 @@ func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *d
 		giveaway.HandlerRemover()
 
 		if len(giveaway.Participants) < winnerCount {
-			privatechan, err := session.UserChannelCreate(creator.ID)
+			privatechan, err := session.UserChannelCreate(giveaway.Creator.ID)
 			if err != nil {
 				return
 			}
 			SendEmbedError(session, privatechan.ID,
-				fmt.Sprintf("Giveaway *(ID: `%s`)* ended with no result because to less people participated to it.", giveaway.UID))
+				fmt.Sprintf(Lang.Classes.Giveaway.CreatorDM.NoParticipations, giveaway.UID))
 
 			editembed := &discordgo.MessageEmbed{
-				Title:  		"GIVEAWAY CLOSED",
-				Description:	content + "\n\n**No winners. To less participants.**",
+				Title:  		Lang.Classes.Giveaway.ClosedMessage.Title,
+				Description:	content + "\n\n" + Lang.Classes.Giveaway.ClosedMessage.NoParticipants,
 				Color: 			COLOR_CLOSED,
 				Footer: &discordgo.MessageEmbedFooter{
-					Text: 		"Expired",
+					Text: 		Lang.Classes.Giveaway.ClosedMessage.Expired,
 				},
 				Author: &discordgo.MessageEmbedAuthor{
 					Name:		creator.Username,
@@ -111,8 +112,8 @@ func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *d
 		}
 
 		editembed := &discordgo.MessageEmbed{
-			Title:  		"GIVEAWAY CLOSED",
-			Description:	content + "\n\n**Winners: ``" + strings.Join(winnerNames, ", ") + "``**",
+			Title:  		Lang.Classes.Giveaway.ClosedMessage.Title,
+			Description:	content + "\n\n" + fmt.Sprintf(Lang.Classes.Giveaway.ClosedMessage.Winners, strings.Join(winnerNames, ", ")),
 			Color: 			COLOR_CLOSED,
 			Footer: &discordgo.MessageEmbedFooter{
 				Text: 		"Expired",
@@ -125,6 +126,14 @@ func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *d
 
 		session.ChannelMessageEditEmbed(giveaway.Channel.ID, giveaway.Message.ID, editembed)
 		session.MessageReactionsRemoveAll(giveaway.Channel.ID, giveaway.Message.ID)
+
+		privatechan, err := session.UserChannelCreate(giveaway.Creator.ID)
+		if err != nil {
+			return
+		}
+		SendEmbed(session, privatechan.ID, fmt.Sprintf(
+			Lang.Classes.Giveaway.CreatorDM.Final,
+			giveaway.UID, giveaway.ParticipantsNumber, strings.Join(winnerNames, ", ")))
 	}()
 
 	remover := session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
@@ -138,33 +147,35 @@ func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *d
 		if _, ok := giveaway.Participants[e.UserID]; ok {
 			pchan, err := session.UserChannelCreate(e.UserID)
 			if err == nil {
-				SendEmbedError(session, pchan.ID, "You can only participate once on a giveaway!")
+				SendEmbedError(session, pchan.ID, Lang.Classes.Giveaway.Notifications.MultiParticipation)
 				session.MessageReactionRemove(giveaway.Channel.ID, giveaway.UID, e.Emoji.Name, e.UserID)
 			}
 			return
 		}
 		giveaway.Participants[e.UserID], err = session.User(e.UserID)
+		giveaway.ParticipantsNumber++
 		if err == nil {
 			pchan, err := session.UserChannelCreate(e.UserID)
 			if err == nil {
-				SendEmbed(session, pchan.ID, "You have participated to the giveaway.\nIf you will win, you will get a notification via direct message.")
+				SendEmbed(session, pchan.ID, Lang.Classes.Giveaway.Notifications.Participated)
 			}
 		}
 		session.MessageReactionRemove(giveaway.Channel.ID, giveaway.UID, e.Emoji.Name, e.UserID)
 	})
 
 	giveaway = &Giveaway{
-		UID:		  	message.ID,
-		Creator:      	creator,
-		Message:      	message,
-		Channel:      	channel,
-		Content:      	content,
-		WinnerCount:  	winnerCount,
-		WinMessage:   	winMessage,
-		Timeout:	  	timeout,
-		Timer:		  	timer,
-		HandlerRemover: remover,
-		Participants: 	map[string]*discordgo.User{},
+		UID:		  	    message.ID,
+		Creator:      	    creator,
+		Message:      	    message,
+		Channel:      	    channel,
+		Content:      	    content,
+		WinnerCount:  	    winnerCount,
+		WinMessage:   	    winMessage,
+		Timeout:	  	    timeout,
+		Timer:		  	    timer,
+		HandlerRemover:     remover,
+		Participants: 	    map[string]*discordgo.User{},
+		ParticipantsNumber: 0,
 	}
 
 	return giveaway, nil

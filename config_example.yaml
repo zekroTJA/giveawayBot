@@ -5,10 +5,14 @@
 ###########################################################
 
 # The access token the bot will use to login to the Discord API
-token: Discord Bot Token Here
+token: Your Discord Bot Token
+# Use this as prefix to command the bot
+prefix: ;
 # The emote which will be used under the giveaway message to 
 # participate to the giveaway
 emote: ✋
 # Enter here all ROLE ID's AS STRING (in "") who should be 
 # authorized to use the giveaway creation and closing command
 authorized: [ "groupId1", "groupId2" ]
+# Language file you want to use (see preset en-US.yaml)
+language: lang/en-EN

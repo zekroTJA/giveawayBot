@@ -1,0 +1,71 @@
+# LANGUAGE DE-DE
+# translated by zekro Development
+
+commands:
+  giveaway:
+    invalidinput: |
+      Ungültige Eingabe.
+      **Bitte erneut eingeben:**
+    entercontent: |
+      **Bitte geben Sie die Nachricht des Giveaways ein:**
+      *Geben Sie `exit` ein um abzubrechen.*
+    enterwinmessage: |
+      **Nun geben die Nachricht ein, welche den Gewinnern in den Privatnachrichten angezeigt werden soll.**
+      *Geben Sie `exit` ein um abzubrechen.*
+    enterparticipantsnumber: |
+      **Bitte geben Sie nun an, wie viele Teilnehmer an dem Giveaway gewinnen werden:**
+      *Geben Sie `exit` ein um abzubrechen.*
+    enterexpiretime: |
+      **Als nächstes geben Sie bitte die Zeit an, die das Giveaway bestehen soll:**
+      *(z.B. '30m', '4h' or '48 h')*
+      *Geben Sie `exit` ein um abzubrechen.*
+    enterchannelresolvable: |
+      **Zuletzt geben Sie nun bitte an, in welchem Channel das Giveaway erscheinen soll:**
+      *name ('general'), ID ('333707989145729420'), mention ('#general')*
+      *Geben Sie `exit` ein um abzubrechen.*
+    creatingfailed: |
+      Die erstellung des Giveaways schlug fehl:
+      ```
+      %s
+      ```
+    created: |
+      Giveaway wurde erstellt in Channel <#%s>.
+      
+classes:
+  giveaway:
+    activemessage:
+      title: |
+        OFFENES GIVEAWAY
+      participateinfo: |
+        *Um Teilzunehmen, klicken Sie auf die Reaction unter dieser Nachricht.*
+      expires: |
+        Läuft ab: %s.
+    closedmessage:
+      title: |
+        GIVEAWAY GESCHLOSSEN
+      winners: |
+        **Gewinner:**
+        ```
+        %s
+        ```
+      noparticipants: |
+        **Keine Gewinner. Es haben zu wenig Leute teilgenommen.**
+      expired: |
+        Abgelaufen.
+    creatordm:
+      noparticipations: |
+        Giveaway *(ID: `%s`)* ist abgelaufen ohne Gewinner, weil zu wenig Leute teilgenommen haben.
+      final: |
+        Giveaway mit der UID `%s` ist abgelaufen.
+        
+        **Teilnehmer:** `%d`
+        **Gewinner:**
+        ```
+        %s
+        ```
+    notifications:
+      multiparticipation: |
+        Sie können an einem Giveaway nur ein mal teilnehmen!
+      participated: |
+        Sie haben sich für das Giveaway als Teilnehmer registriert.
+        Sollten Sie gewinnen, so bekommen Sie erneut eine Benachrichtigung.
