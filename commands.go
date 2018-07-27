@@ -13,6 +13,59 @@ func CmdTest(s *discordgo.Session, config *Config, args []string, m *discordgo.M
 	return nil
 }
 
+func CmdInfo(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
+	embed := &discordgo.MessageEmbed{
+		Title: "giveawayBot INFO",
+		Color: COLOR_MAIN,
+		Description: "© 2018 zekro Development\n[**zekro.de**](https://zekro.de)",
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", s.State.User.ID, s.State.User.Avatar),
+		},
+		Fields: []*discordgo.MessageEmbedField{
+			&discordgo.MessageEmbedField{
+				Name: "Current Version",
+				Value: "v." + VERSION,
+				Inline: true,
+			},
+			&discordgo.MessageEmbedField{
+				Name: "Licenced Under",
+				Value: "MIT",
+				Inline: true,
+			},
+			&discordgo.MessageEmbedField{
+				Name: "GitHub Repository",
+				Value: ":point_right:  [**zekroTJA/giveawayBot**](https://github.com/zekroTJA/giveawayBot)",
+				Inline: false,
+			},
+			&discordgo.MessageEmbedField{
+				Name: "3rd Party Dependencies",
+				Value: ":white_small_square:  [discordgo](https://github.com/bwmarrin/discordgo)\n" + 
+				       ":white_small_square:  [yaml](https://github.com/go-yaml/yaml)",
+				Inline: false,
+			},
+		},
+	}
+
+	_, err := s.ChannelMessageSendEmbed(c.ID, embed)
+	return err
+}
+
+func CmdHelp(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
+
+	helpMsg := 	":white_small_square:  `help`  -  Display this help message\n" + 
+				":white_small_square:  `info`  -  Display info about this bot\n" + 
+				":white_small_square:  `ga`    -  Create giveaway\n" 
+
+	embed := &discordgo.MessageEmbed{
+		Title: "HELP",
+		Color: COLOR_MAIN,
+		Description: helpMsg,
+	}
+
+	_, err := s.ChannelMessageSendEmbed(c.ID, embed)
+	return err
+}
+
 func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 	member, err := s.GuildMember(g.ID, a.ID)
 	if err != nil {
