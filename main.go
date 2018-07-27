@@ -8,7 +8,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Cmd contains instance of CmdHandler
 var Cmd *CmdHandler
+// Lang contains instance of laoded langauge file
 var Lang *Language
 
 func main() {

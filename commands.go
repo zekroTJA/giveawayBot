@@ -8,11 +8,12 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-
+// CmdTest - FUnction for Test Command
 func CmdTest(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 	return nil
 }
 
+// CmdInfo - Function for Info command
 func CmdInfo(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 	embed := &discordgo.MessageEmbed{
 		Title: "giveawayBot INFO",
@@ -50,6 +51,7 @@ func CmdInfo(s *discordgo.Session, config *Config, args []string, m *discordgo.M
 	return err
 }
 
+// CmdHelp - Function for Help cpmmand
 func CmdHelp(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 
 	helpMsg := 	":white_small_square:  `help`  -  Display this help message\n" + 
@@ -66,6 +68,7 @@ func CmdHelp(s *discordgo.Session, config *Config, args []string, m *discordgo.M
 	return err
 }
 
+// CmdGiveaway - function for Giveaway Command
 func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 	member, err := s.GuildMember(g.ID, a.ID)
 	if err != nil {

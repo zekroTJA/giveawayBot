@@ -8,6 +8,7 @@ import (
 
 //////////////// PUBLIC STUFF ////////////////
 
+// SendEmbed sends a prepared embed message with content passed by arguments in passed channel
 func SendEmbed(session *discordgo.Session, channelID string, cont string) (*discordgo.Message, error) {
 	return session.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
 		Description: cont,
@@ -15,6 +16,7 @@ func SendEmbed(session *discordgo.Session, channelID string, cont string) (*disc
 	})
 }
 
+// SendEmbed sends a prepared error type embed message with content passed by arguments in passed channel
 func SendEmbedError(session *discordgo.Session, channelID string, cont string) (*discordgo.Message, error) {
 	return session.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
 		Description: cont,
@@ -22,6 +24,8 @@ func SendEmbedError(session *discordgo.Session, channelID string, cont string) (
 	})
 }
 
+// CheckAutorized returns if the passed user has one of
+// the authorized roles
 func CheckAutorized(config *Config, member *discordgo.Member) bool {
 	for _, r := range member.Roles {
 		for _, a := range config.Data.Authorized {
@@ -33,6 +37,7 @@ func CheckAutorized(config *Config, member *discordgo.Member) bool {
 	return false
 }
 
+// FetchChannel returns a text channel fetched by pased ID, mention, name or name-part
 func FetchChannel(g *discordgo.Guild, resolvable string) (*discordgo.Channel, error) {
 	var channels []*discordgo.Channel
 	for _, c := range g.Channels {

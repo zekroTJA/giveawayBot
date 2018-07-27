@@ -5,6 +5,8 @@ import (
 	"github.com/go-yaml/yaml"
 )
 
+// language contains texts in set 
+// language to display in imessages
 type Language struct {
 	Commands struct {
 		Giveaway struct {
@@ -43,7 +45,8 @@ type Language struct {
 	}
 }
 
-
+// NewLanguage load the entered language file set
+// in config
 func NewLanguage(config *Config) (*Language, error) {
 	b_data, err := ioutil.ReadFile(config.Data.Language + ".yaml")
 	if err != nil {

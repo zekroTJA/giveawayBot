@@ -24,7 +24,7 @@ type Giveaway struct {
 	ParticipantsNumber  int
 }
 
-
+// NewGiveaway creates new instance of Gieaway
 func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *discordgo.Channel, winnerCount int, content, winMessage string, timeout time.Duration, emote string) (*Giveaway, error) {
 
 	var giveaway *Giveaway
