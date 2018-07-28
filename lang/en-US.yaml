@@ -30,6 +30,15 @@ commands:
       ```
     created: |
       Giveaway created in channel <#%s>.
+  authrole:
+    added: |
+      Added roles to authorized roles:
+      %s
+    failed: |
+      An error happend saving secondary authorized roles:
+      ```
+      %s
+      ```
       
 classes:
   giveaway:

@@ -10,6 +10,7 @@ import (
 type ConfigData struct {
 	Token      string   `yaml:"token"`
 	Prefix     string   `yaml:"prefix"`
+	Admin 	   string   `yaml:"admin"`
 	Emote      string   `yaml:"emote"`
 	Authorized []string `yaml:"authorized"`
 	Language   string   `yaml:"language"`

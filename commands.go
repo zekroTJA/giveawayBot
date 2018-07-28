@@ -3,8 +3,11 @@ package main
 import (
 	"regexp"
 	"fmt"
+	"strings"
 	"strconv"
 	"time"
+	"io/ioutil"
+	"errors"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -56,6 +59,7 @@ func CmdHelp(s *discordgo.Session, config *Config, args []string, m *discordgo.M
 
 	helpMsg := 	":white_small_square:  `help`  -  Display this help message\n" + 
 				":white_small_square:  `info`  -  Display info about this bot\n" + 
+				":white_small_square:  `authroles <role1> <role2>`  -  Add roles to authorized roles\n" + 
 				":white_small_square:  `ga`    -  Create giveaway\n" 
 
 	embed := &discordgo.MessageEmbed{
@@ -68,6 +72,37 @@ func CmdHelp(s *discordgo.Session, config *Config, args []string, m *discordgo.M
 	return err
 }
 
+func CmdSetAuthRoles(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
+	if !CheckAdmin(config, a) {
+		return errors.New("NO_PERMISSION")
+	}
+	
+	var strRoles []string
+	for _, a := range args {
+		r, err := FetchRole(g, a)
+		if err == nil {
+			strRoles = append(strRoles, r.ID)
+		}
+		fmt.Println(strRoles)
+	}
+
+	err := ioutil.WriteFile("./.authroles", 
+		[]byte(strings.Join(strRoles, ";")), 0644)
+
+	if err == nil {
+		SendEmbed(s, c.ID,
+			fmt.Sprintf(Lang.Commands.Authrole.Added, func()string {
+				marray := make([]string, len(strRoles))
+				for i, rid := range strRoles {
+					marray[i] = "<@&" + rid + ">"
+				}
+				return strings.Join(marray, ", ")
+			}()))
+	}
+
+	return err
+}
+
 // CmdGiveaway - function for Giveaway Command
 func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 	member, err := s.GuildMember(g.ID, a.ID)
@@ -76,7 +111,7 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 	}
 
 	if !CheckAutorized(config, member) {
-		return nil
+		return errors.New("NO_PERMISSION")
 	}
 
 	currentStatus := 0

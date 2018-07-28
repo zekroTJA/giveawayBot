@@ -8,11 +8,14 @@
 token: Your Discord Bot Token
 # Use this as prefix to command the bot
 prefix: ;
+# Enter here your own discord ID to authorize you as the
+# the admin of the bot
+admin: Your Discord Account ID
 # The emote which will be used under the giveaway message to 
 # participate to the giveaway
 emote: ✋
 # Enter here all ROLE ID's AS STRING (in "") who should be 
 # authorized to use the giveaway creation and closing command
-authorized: [ "groupId1", "groupId2" ]
+authorized: []
 # Language file you want to use (see preset en-US.yaml)
-language: lang/en-EN
+language: lang/en-US

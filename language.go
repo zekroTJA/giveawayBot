@@ -19,6 +19,10 @@ type Language struct {
 			CreatingFailed,			
 			Created string
 		}
+		Authrole struct {
+			Added,
+			Failed string
+		}
 	}
 	Classes struct {
 		Giveaway struct {

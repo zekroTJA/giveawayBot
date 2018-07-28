@@ -30,6 +30,17 @@ commands:
       ```
     created: |
       Giveaway wurde erstellt in Channel <#%s>.
+  # --> UNTRANSLATED SECTION
+  authrole:
+    added: |
+      Added roles to authorized roles:
+      %s
+    failed: |
+      An error happend saving secondary authorized roles:
+      ```
+      %s
+      ```
+  # <-- UNTRANSLATED SECTION
       
 classes:
   giveaway:
