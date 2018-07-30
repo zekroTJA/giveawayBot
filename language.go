@@ -17,7 +17,11 @@ type Language struct {
 			EnterExpireTime,			
 			EnterChannelResolvable,	
 			CreatingFailed,			
-			Created string
+			Created,
+			Closed,
+			CloseNoID,
+			CloseInvalidID,
+			Calceled string
 		}
 		Authrole struct {
 			Added,

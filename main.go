@@ -49,5 +49,6 @@ func main() {
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
 
+	LogInfo("Shutting down...")
 	session.Close()
 }

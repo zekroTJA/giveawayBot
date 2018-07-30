@@ -11,6 +11,7 @@ import (
 
 type Giveaway struct {
 	UID          	    string
+	Session				*discordgo.Session
 	Creator      	    *discordgo.User
 	Message      	    *discordgo.Message
 	Channel      	    *discordgo.Channel
@@ -54,89 +55,7 @@ func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *d
 	timer := time.NewTimer(timeout)
 	go func() {
 		<-timer.C
-
-		giveaway.HandlerRemover()
-
-		delete(OpenGiveaways, giveaway.UID)
-
-		if len(giveaway.Participants) < winnerCount {
-			privatechan, err := session.UserChannelCreate(giveaway.Creator.ID)
-			if err != nil {
-				return
-			}
-			SendEmbedError(session, privatechan.ID,
-				fmt.Sprintf(Lang.Classes.Giveaway.CreatorDM.NoParticipations, giveaway.UID))
-
-			editembed := &discordgo.MessageEmbed{
-				Title:  		Lang.Classes.Giveaway.ClosedMessage.Title,
-				Description:	content + "\n\n" + Lang.Classes.Giveaway.ClosedMessage.NoParticipants,
-				Color: 			COLOR_CLOSED,
-				Footer: &discordgo.MessageEmbedFooter{
-					Text: 		Lang.Classes.Giveaway.ClosedMessage.Expired,
-				},
-				Author: &discordgo.MessageEmbedAuthor{
-					Name:		creator.Username,
-					IconURL:	fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", creator.ID, creator.Avatar),
-				},
-			}
-		
-			session.ChannelMessageEditEmbed(giveaway.Channel.ID, giveaway.Message.ID, editembed)
-			session.MessageReactionsRemoveAll(giveaway.Channel.ID, giveaway.Message.ID)
-
-			return
-		}
-
-		rand.Seed(time.Now().UTC().UnixNano())
-
-		keys := make([]string, len(giveaway.Participants))
-		i := 0
-		for k := range giveaway.Participants {
-			keys[i] = k
-			i++
-		}
-
-		fmt.Println(giveaway.Participants)
-
-		winnerNames := make([]string, winnerCount)
-		winners := make([]*discordgo.User, winnerCount)
-		for i, _ := range winners {
-			rnumb := randInt(0, len(giveaway.Participants) - 1)
-			winners[i] = giveaway.Participants[keys[rnumb]]
-			delete(giveaway.Participants, keys[rnumb])
-		}
-
-		for i, w := range winners {
-			winnerNames[i] = w.Username
-			privatechan, err := session.UserChannelCreate(w.ID)
-			if err != nil {
-				continue
-			}
-			SendEmbed(session, privatechan.ID, giveaway.WinMessage)
-		}
-
-		editembed := &discordgo.MessageEmbed{
-			Title:  		Lang.Classes.Giveaway.ClosedMessage.Title,
-			Description:	content + "\n\n" + fmt.Sprintf(Lang.Classes.Giveaway.ClosedMessage.Winners, strings.Join(winnerNames, ", ")),
-			Color: 			COLOR_CLOSED,
-			Footer: &discordgo.MessageEmbedFooter{
-				Text: 		"Expired",
-			},
-			Author: &discordgo.MessageEmbedAuthor{
-				Name:		creator.Username,
-				IconURL:	fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", creator.ID, creator.Avatar),
-			},
-		}
-
-		session.ChannelMessageEditEmbed(giveaway.Channel.ID, giveaway.Message.ID, editembed)
-		session.MessageReactionsRemoveAll(giveaway.Channel.ID, giveaway.Message.ID)
-
-		privatechan, err := session.UserChannelCreate(giveaway.Creator.ID)
-		if err != nil {
-			return
-		}
-		SendEmbed(session, privatechan.ID, fmt.Sprintf(
-			Lang.Classes.Giveaway.CreatorDM.Final,
-			giveaway.UID, giveaway.ParticipantsNumber, strings.Join(winnerNames, ", ")))
+		giveaway.Close(false)
 	}()
 
 	remover := session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
@@ -168,6 +87,7 @@ func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *d
 
 	giveaway = &Giveaway{
 		UID:		  	    message.ID,
+		Session:			session,
 		Creator:      	    creator,
 		Message:      	    message,
 		Channel:      	    channel,
@@ -185,6 +105,96 @@ func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *d
 	return giveaway, nil
 } 
 
+func (giveaway *Giveaway) Close(cancel bool) {
+	giveaway.HandlerRemover()
+	
+	delete(OpenGiveaways, giveaway.UID)
+
+	if cancel {
+		giveaway.Timer.Stop()
+		giveaway.Session.ChannelMessageDelete(giveaway.Channel.ID, giveaway.Message.ID)
+		return
+	}
+
+	if len(giveaway.Participants) < giveaway.WinnerCount {
+		privatechan, err := giveaway.Session.UserChannelCreate(giveaway.Creator.ID)
+		if err != nil {
+			return
+		}
+		SendEmbedError(giveaway.Session, privatechan.ID,
+			fmt.Sprintf(Lang.Classes.Giveaway.CreatorDM.NoParticipations, giveaway.UID))
+				
+		editembed := &discordgo.MessageEmbed{
+			Title:  		Lang.Classes.Giveaway.ClosedMessage.Title,
+			Description:	giveaway.Content + "\n\n" + Lang.Classes.Giveaway.ClosedMessage.NoParticipants,
+			Color: 			COLOR_CLOSED,
+			Footer: &discordgo.MessageEmbedFooter{
+				Text: 		Lang.Classes.Giveaway.ClosedMessage.Expired,
+			},
+			Author: &discordgo.MessageEmbedAuthor{
+				Name:		giveaway.Creator.Username,
+				IconURL:	fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", giveaway.Creator.ID, giveaway.Creator.Avatar),
+			},
+		}
+		
+		giveaway.Session.ChannelMessageEditEmbed(giveaway.Channel.ID, giveaway.Message.ID, editembed)
+		giveaway.Session.MessageReactionsRemoveAll(giveaway.Channel.ID, giveaway.Message.ID)
+
+		return
+	}
+
+	rand.Seed(time.Now().UTC().UnixNano())
+
+	keys := make([]string, len(giveaway.Participants))
+	i := 0
+	for k := range giveaway.Participants {
+		keys[i] = k
+		i++
+	}
+
+	fmt.Println(giveaway.Participants)
+
+	winnerNames := make([]string, giveaway.WinnerCount)
+	winners := make([]*discordgo.User, giveaway.WinnerCount)
+	for i, _ := range winners {
+		rnumb := randInt(0, len(giveaway.Participants) - 1)
+		winners[i] = giveaway.Participants[keys[rnumb]]
+		delete(giveaway.Participants, keys[rnumb])
+	}
+
+	for i, w := range winners {
+		winnerNames[i] = w.Username
+		privatechan, err := giveaway.Session.UserChannelCreate(w.ID)
+		if err != nil {
+			continue
+		}
+		SendEmbed(giveaway.Session, privatechan.ID, giveaway.WinMessage)
+	}
+
+	editembed := &discordgo.MessageEmbed{
+		Title:  		Lang.Classes.Giveaway.ClosedMessage.Title,
+		Description:	giveaway.Content + "\n\n" + fmt.Sprintf(Lang.Classes.Giveaway.ClosedMessage.Winners, strings.Join(winnerNames, ", ")),
+		Color: 			COLOR_CLOSED,
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: 		"Expired",
+		},
+		Author: &discordgo.MessageEmbedAuthor{
+			Name:		giveaway.Creator.Username,
+			IconURL:	fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", giveaway.Creator.ID, giveaway.Creator.Avatar),
+		},
+	}
+
+	giveaway.Session.ChannelMessageEditEmbed(giveaway.Channel.ID, giveaway.Message.ID, editembed)
+	giveaway.Session.MessageReactionsRemoveAll(giveaway.Channel.ID, giveaway.Message.ID)
+
+	privatechan, err := giveaway.Session.UserChannelCreate(giveaway.Creator.ID)
+	if err != nil {
+		return
+	}
+	SendEmbed(giveaway.Session, privatechan.ID, fmt.Sprintf(
+		Lang.Classes.Giveaway.CreatorDM.Final,
+		giveaway.UID, giveaway.ParticipantsNumber, strings.Join(winnerNames, ", ")))
+}
 
 func randInt(min, max int) int {
 	if min - max == 0 {

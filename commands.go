@@ -60,10 +60,14 @@ func CmdInfo(s *discordgo.Session, config *Config, args []string, m *discordgo.M
 // CmdHelp - Function for Help cpmmand
 func CmdHelp(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 
-	helpMsg := 	":white_small_square:  `help`  -  Display this help message\n" + 
+	helpMsg := 	"**MISC**\n" +
+				":white_small_square:  `help`  -  Display this help message\n" + 
 				":white_small_square:  `info`  -  Display info about this bot\n" + 
-				":white_small_square:  `authroles <role1> <role2>`  -  Add roles to authorized roles\n" + 
-				":white_small_square:  `ga`    -  Create giveaway\n" 
+				":white_small_square:  `authroles <role1> <role2>`  -  Add roles to authorized roles\n\n" + 			
+				"**GIVEAWAYS**\n" +  
+				":white_small_square:  `ga list`    -  List all open giveaways\n" +
+				":white_small_square:  `ga close <UID>`    -  Close a giveaway (winners will be selected)\n" +
+				":white_small_square:  `ga cancel <UID>`    -  Cancel a giveaway (no winners will be selected)\n"
 
 	embed := &discordgo.MessageEmbed{
 		Title: "HELP",
@@ -118,32 +122,65 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 		return errors.New("NO_PERMISSION")
 	}
 
-	if len(args) > 0 && (args[0] == "list" || args[0] == "ls") {
-		embed := &discordgo.MessageEmbed{
-			Title: "Open Giveaways",
-			Color: COLOR_MAIN,
+	if len(args) > 0 {
+
+		if args[0] == "list" || args[0] == "ls" {
+			embed := &discordgo.MessageEmbed{
+				Title: "Open Giveaways",
+				Color: COLOR_MAIN,
+			}
+			for k, v := range OpenGiveaways {
+				embedText := fmt.Sprintf(
+					"**Creator:** <@%s>\n" +
+					"**Expires:** `%s`\n" +
+					"**Winner Count:** `%d`\n" +
+					"**Current Participants:** `%d`\n" +
+					"**Content:**\n```\n%s\n```\n" +
+					"**Winner Message:**\n```\n%s\n```\n",
+					v.Creator.ID, 
+					v.Expires.Format(time.RFC1123),
+					v.WinnerCount,
+					v.ParticipantsNumber,
+					v.Content,
+					v.WinMessage)
+				embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+					Name: k,
+					Value: embedText,
+				})
+			}
+			_, err := s.ChannelMessageSendEmbed(c.ID, embed)
+			return err
 		}
-		for k, v := range OpenGiveaways {
-			embedText := fmt.Sprintf(
-				"**Creator:** <@%s>\n" +
-				"**Expires:** `%s`\n" +
-				"**Winner Count:** `%d`\n" +
-				"**Current Participants:** `%d`\n" +
-				"**Content:**\n```\n%s\n```\n" +
-				"**Winner Message:**\n```\n%s\n```\n",
-				v.Creator.ID, 
-				v.Expires.Format(time.RFC1123),
-				v.WinnerCount,
-				v.ParticipantsNumber,
-				v.Content,
-				v.WinMessage)
-			embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
-				Name: k,
-				Value: embedText,
-			})
+
+		if args[0] == "close" || args[0] == "stop" {
+			if len(args) < 2 {
+				_, err := SendEmbedError(s, c.ID, Lang.Commands.Giveaway.CloseNoID)
+				return err
+			}
+			uid := args[1]
+			if ga, ok := OpenGiveaways[uid]; ok {
+				ga.Close(false)
+				_, err = SendEmbed(s, c.ID, Lang.Commands.Giveaway.Closed)
+			} else {
+				_, err = SendEmbedError(s, c.ID, Lang.Commands.Giveaway.CloseInvalidID)
+			}
+			return err
 		}
-		_, err := s.ChannelMessageSendEmbed(c.ID, embed)
-		return err
+
+		if args[0] == "cancel" {
+			if len(args) < 2 {
+				_, err := SendEmbedError(s, c.ID, Lang.Commands.Giveaway.CloseNoID)
+				return err
+			}
+			uid := args[1]
+			if ga, ok := OpenGiveaways[uid]; ok {
+				ga.Close(true)
+				_, err = SendEmbed(s, c.ID, Lang.Commands.Giveaway.Closed)
+			} else {
+				_, err = SendEmbedError(s, c.ID, Lang.Commands.Giveaway.Calceled)
+			}
+			return err
+		}
 	}
 
 	currentStatus := 0
@@ -217,7 +254,7 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 			if err != nil {
 				SendEmbedError(s, c.ID, fmt.Sprintf(Lang.Commands.Giveaway.CreatingFailed, err.Error()))
 			} else {
-				SendEmbed(s, c.ID, fmt.Sprintf(Lang.Commands.Giveaway.Created, channel.ID))
+				SendEmbed(s, c.ID, fmt.Sprintf(Lang.Commands.Giveaway.Created, giveaway.UID, channel.ID))
 			}
 		}
 	})
