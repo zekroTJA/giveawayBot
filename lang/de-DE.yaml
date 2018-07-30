@@ -31,13 +31,13 @@ commands:
     created: |
       Giveaway wurde erstellt mit der UID `%s` in Channel <#%s>.
     closenoid: |
-      Please enter the UID of the running giveaway!
+      Bitte geben Si die UID des zu schließenden Giveaways an!
     closeinvalidid: |
-      The entered UID of the giveaway is invalid or the giveaway is not running anymore!
+      Die eingegebene UID ist ungültig oder das Giveaway mit der UID ist schon abgelaufen. 
     closed: |
-      The giveaway was closed.
+      Das Giveaway wurde geschlossen.
     canceled: |
-      The giveaway was canceled and no winner was chosen and notificated.
+      Das Giveaway wurde abgebrochen und keine Gewinner wurden ermittelt und kontaktiert.
   authrole:
     added: |
       Folgende rollen zu den autorisierten Rollen hinzugefügt:
