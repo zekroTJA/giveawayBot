@@ -21,7 +21,8 @@ type Language struct {
 			Closed,
 			CloseNoID,
 			CloseInvalidID,
-			Calceled string
+			Calceled,
+			WrongGuild string
 		}
 		Authrole struct {
 			Added,

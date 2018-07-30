@@ -8,6 +8,7 @@ import (
 	"time"
 	"io/ioutil"
 	"errors"
+	"encoding/json"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -85,17 +86,27 @@ func CmdSetAuthRoles(s *discordgo.Session, config *Config, args []string, m *dis
 		return errors.New("NO_PERMISSION")
 	}
 	
+	authRoles := map[string][]string{}
+	bData, err := ioutil.ReadFile("./.authroles.json")
+	if err == nil {
+		err = json.Unmarshal(bData, &authRoles)
+	}
+
 	var strRoles []string
 	for _, a := range args {
 		r, err := FetchRole(g, a)
 		if err == nil {
 			strRoles = append(strRoles, r.ID)
 		}
-		fmt.Println(strRoles)
 	}
 
-	err := ioutil.WriteFile("./.authroles", 
-		[]byte(strings.Join(strRoles, ";")), 0644)
+	authRoles[g.ID] = strRoles
+
+	bData, err = json.Marshal(authRoles)
+	if err == nil {
+		err = ioutil.WriteFile("./.authroles.json", bData, 0644)
+		fmt.Println(err)
+	}
 
 	if err == nil {
 		SendEmbed(s, c.ID,
@@ -118,7 +129,7 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 		return err
 	}
 
-	if !CheckAutorized(config, member) {
+	if !CheckAutorized(config, g.ID, member) {
 		return errors.New("NO_PERMISSION")
 	}
 
@@ -130,23 +141,25 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 				Color: COLOR_MAIN,
 			}
 			for k, v := range OpenGiveaways {
-				embedText := fmt.Sprintf(
-					"**Creator:** <@%s>\n" +
-					"**Expires:** `%s`\n" +
-					"**Winner Count:** `%d`\n" +
-					"**Current Participants:** `%d`\n" +
-					"**Content:**\n```\n%s\n```\n" +
-					"**Winner Message:**\n```\n%s\n```\n",
-					v.Creator.ID, 
-					v.Expires.Format(time.RFC1123),
-					v.WinnerCount,
-					v.ParticipantsNumber,
-					v.Content,
-					v.WinMessage)
-				embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
-					Name: k,
-					Value: embedText,
-				})
+				if v.Guild.ID == g.ID {
+					embedText := fmt.Sprintf(
+						"**Creator:** <@%s>\n" +
+						"**Expires:** `%s`\n" +
+						"**Winner Count:** `%d`\n" +
+						"**Current Participants:** `%d`\n" +
+						"**Content:**\n```\n%s\n```\n" +
+						"**Winner Message:**\n```\n%s\n```\n",
+						v.Creator.ID, 
+						v.Expires.Format(time.RFC1123),
+						v.WinnerCount,
+						v.ParticipantsNumber,
+						v.Content,
+						v.WinMessage)
+					embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+						Name: k,
+						Value: embedText,
+					})
+				}
 			}
 			_, err := s.ChannelMessageSendEmbed(c.ID, embed)
 			return err
@@ -159,6 +172,10 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 			}
 			uid := args[1]
 			if ga, ok := OpenGiveaways[uid]; ok {
+				if ga.Guild.ID != g.ID {
+					_, err = SendEmbedError(s, c.ID, Lang.Commands.Giveaway.WrongGuild)
+					return err
+				}
 				ga.Close(false)
 				_, err = SendEmbed(s, c.ID, Lang.Commands.Giveaway.Closed)
 			} else {
@@ -174,6 +191,10 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 			}
 			uid := args[1]
 			if ga, ok := OpenGiveaways[uid]; ok {
+				if ga.Guild.ID != g.ID {
+					_, err = SendEmbedError(s, c.ID, Lang.Commands.Giveaway.WrongGuild)
+					return err
+				}
 				ga.Close(true)
 				_, err = SendEmbed(s, c.ID, Lang.Commands.Giveaway.Closed)
 			} else {

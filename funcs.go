@@ -1,9 +1,11 @@
 package main
 
 import (
+	//"fmt"
 	"strings"
 	"errors"
 	"io/ioutil"
+	"encoding/json"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -27,14 +29,15 @@ func SendEmbedError(session *discordgo.Session, channelID string, cont string) (
 
 // CheckAutorized returns if the passed user has one of
 // the authorized roles
-func CheckAutorized(config *Config, member *discordgo.Member) bool {
-	roles := config.Data.Authorized
-	bData, err := ioutil.ReadFile("./.authroles")
+func CheckAutorized(config *Config, guildid string, member *discordgo.Member) bool {
+	authRoles := map[string][]string{}
+	bData, err := ioutil.ReadFile("./.authroles.json")
 	if err == nil {
-		roles = append(roles, strings.Split(string(bData), ";")...)
+		err = json.Unmarshal(bData, &authRoles)
 	}
+
 	for _, r := range member.Roles {
-		for _, a := range roles {
+		for _, a := range authRoles[guildid] {
 			if r == a {
 				return true
 			}

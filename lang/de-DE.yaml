@@ -34,6 +34,8 @@ commands:
       Bitte geben Si die UID des zu schließenden Giveaways an!
     closeinvalidid: |
       Die eingegebene UID ist ungültig oder das Giveaway mit der UID ist schon abgelaufen. 
+    wrongguild: |
+      Sie können keine giveaways einer anderen Guild schließen!
     closed: |
       Das Giveaway wurde geschlossen.
     canceled: |

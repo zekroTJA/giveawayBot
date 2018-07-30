@@ -34,6 +34,8 @@ commands:
       Please enter the UID of the running giveaway!
     closeinvalidid: |
       The entered UID of the giveaway is invalid or the giveaway is not running anymore!
+    wrongguild: |
+      You can not close giveaways from other guilds!
     closed: |
       The giveaway was closed.
     canceled: |

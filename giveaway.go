@@ -15,6 +15,7 @@ type Giveaway struct {
 	Creator      	    *discordgo.User
 	Message      	    *discordgo.Message
 	Channel      	    *discordgo.Channel
+	Guild				*discordgo.Guild
 	Content      	    string
 	WinnerCount  	    int
 	WinMessage   	    string
@@ -85,12 +86,18 @@ func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *d
 		session.MessageReactionRemove(giveaway.Channel.ID, giveaway.UID, e.Emoji.Name, e.UserID)
 	})
 
+	guild, err := session.Guild(channel.GuildID)
+	if err != nil {
+		return nil, err
+	}
+
 	giveaway = &Giveaway{
 		UID:		  	    message.ID,
 		Session:			session,
 		Creator:      	    creator,
 		Message:      	    message,
 		Channel:      	    channel,
+		Guild:				guild,
 		Content:      	    content,
 		WinnerCount:  	    winnerCount,
 		WinMessage:   	    winMessage,
