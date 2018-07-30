@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 	"github.com/bwmarrin/discordgo"
 )
@@ -55,7 +54,7 @@ func (c *CmdHandler) Handle(m *discordgo.MessageCreate) {
 	if cmdf, ok := c.Commands[invoke]; ok {
 		err = cmdf(c.Session, c.ConfigInstance, args, m, channel, author, guild)
 		if err != nil {
-			SendEmbedError(c.Session, channel, "**Error:**\n```\n" + err.Error() + "\n```")
+			SendEmbedError(c.Session, channel.ID, "**Error:**\n```\n" + err.Error() + "\n```")
 		}
 	}
 }

@@ -18,6 +18,7 @@ type Giveaway struct {
 	WinnerCount  	    int
 	WinMessage   	    string
 	Timeout      	    time.Duration
+	Expires 			time.Time
 	Timer 		 	    *time.Timer
 	HandlerRemover      func()
 	Participants        map[string]*discordgo.User
@@ -55,6 +56,8 @@ func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *d
 		<-timer.C
 
 		giveaway.HandlerRemover()
+
+		delete(OpenGiveaways, giveaway.UID)
 
 		if len(giveaway.Participants) < winnerCount {
 			privatechan, err := session.UserChannelCreate(giveaway.Creator.ID)
@@ -172,6 +175,7 @@ func NewGiveaway(session *discordgo.Session, creator *discordgo.User, channel *d
 		WinnerCount:  	    winnerCount,
 		WinMessage:   	    winMessage,
 		Timeout:	  	    timeout,
+		Expires:			time.Now().Add(timeout),
 		Timer:		  	    timer,
 		HandlerRemover:     remover,
 		Participants: 	    map[string]*discordgo.User{},

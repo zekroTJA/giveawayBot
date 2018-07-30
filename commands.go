@@ -11,6 +11,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+
+var OpenGiveaways map[string]*Giveaway
+
 // CmdTest - FUnction for Test Command
 func CmdTest(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 	return nil
@@ -72,6 +75,7 @@ func CmdHelp(s *discordgo.Session, config *Config, args []string, m *discordgo.M
 	return err
 }
 
+// CmdSetAuthRoles - Function for Setauthroles Command
 func CmdSetAuthRoles(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 	if !CheckAdmin(config, a) {
 		return errors.New("NO_PERMISSION")
@@ -115,8 +119,31 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 	}
 
 	if len(args) > 0 && (args[0] == "list" || args[0] == "ls") {
-
-		return nil
+		embed := &discordgo.MessageEmbed{
+			Title: "Open Giveaways",
+			Color: COLOR_MAIN,
+		}
+		for k, v := range OpenGiveaways {
+			embedText := fmt.Sprintf(
+				"**Creator:** <@%s>\n" +
+				"**Expires:** `%s`\n" +
+				"**Winner Count:** `%d`\n" +
+				"**Current Participants:** `%d`\n" +
+				"**Content:**\n```\n%s\n```\n" +
+				"**Winner Message:**\n```\n%s\n```\n",
+				v.Creator.ID, 
+				v.Expires.Format(time.RFC1123),
+				v.WinnerCount,
+				v.ParticipantsNumber,
+				v.Content,
+				v.WinMessage)
+			embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+				Name: k,
+				Value: embedText,
+			})
+		}
+		_, err := s.ChannelMessageSendEmbed(c.ID, embed)
+		return err
 	}
 
 	currentStatus := 0
@@ -180,7 +207,12 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 				SendEmbedError(s, c.ID, Lang.Commands.Giveaway.InvalidInput)
 				return
 			}
-			giveaway, err = NewGiveaway(s, a, channel, winnerCount, content, winMessage, timeout, config.Data.Emote)
+			giveaway, err := NewGiveaway(s, a, channel, winnerCount, content, winMessage, timeout, config.Data.Emote)
+			if OpenGiveaways == nil {
+				OpenGiveaways = map[string]*Giveaway{ giveaway.UID: giveaway }
+			} else {
+				OpenGiveaways[giveaway.UID] = giveaway
+			}
 			remover()
 			if err != nil {
 				SendEmbedError(s, c.ID, fmt.Sprintf(Lang.Commands.Giveaway.CreatingFailed, err.Error()))
