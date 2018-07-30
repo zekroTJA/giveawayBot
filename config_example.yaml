@@ -14,8 +14,8 @@ admin: Your Discord Account ID
 # The emote which will be used under the giveaway message to 
 # participate to the giveaway
 emote: ✋
-# Enter here all ROLE ID's AS STRING (in "") who should be 
-# authorized to use the giveaway creation and closing command
+# Enter here all ROLE ID's who should be authorized 
+# to use the giveaway creation and closing command
 authorized: []
 # Language file you want to use (see preset en-US.yaml)
 language: lang/en-US

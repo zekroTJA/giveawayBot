@@ -53,6 +53,9 @@ func (c *CmdHandler) Handle(m *discordgo.MessageCreate) {
 	args := _contsplit[1:]
 
 	if cmdf, ok := c.Commands[invoke]; ok {
-		fmt.Println(cmdf(c.Session, c.ConfigInstance, args, m, channel, author, guild))
+		err = cmdf(c.Session, c.ConfigInstance, args, m, channel, author, guild)
+		if err != nil {
+			SendEmbedError(c.Session, channel, "**Error:**\n```\n" + err.Error() + "\n```")
+		}
 	}
 }

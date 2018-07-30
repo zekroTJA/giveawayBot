@@ -114,6 +114,11 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 		return errors.New("NO_PERMISSION")
 	}
 
+	if len(args) > 0 && (args[0] == "list" || args[0] == "ls") {
+
+		return nil
+	}
+
 	currentStatus := 0
 	var content, winMessage string
 	var winnerCount int
@@ -175,7 +180,7 @@ func CmdGiveaway(s *discordgo.Session, config *Config, args []string, m *discord
 				SendEmbedError(s, c.ID, Lang.Commands.Giveaway.InvalidInput)
 				return
 			}
-			_, err = NewGiveaway(s, a, channel, winnerCount, content, winMessage, timeout, config.Data.Emote)
+			giveaway, err = NewGiveaway(s, a, channel, winnerCount, content, winMessage, timeout, config.Data.Emote)
 			remover()
 			if err != nil {
 				SendEmbedError(s, c.ID, fmt.Sprintf(Lang.Commands.Giveaway.CreatingFailed, err.Error()))

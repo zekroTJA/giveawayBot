@@ -1,7 +1,7 @@
 package main
 
 const (
-	VERSION      = "0.3.0"
+	VERSION      = "0.3.1"
 
 	COLOR_MAIN   = 0x4DD0E1
 	COLOR_ERROR  = 0xFF3D00
