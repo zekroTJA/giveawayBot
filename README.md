@@ -15,15 +15,17 @@
 
 This is a little Discord bot to easily create giveaways joinable by a single click on a reaction. This bot is easy to set up and fast to use.
 
-### Screenshots
-
-*soon*
-
 ---
 
 # Installation
 
-Download the release binary of the tool for your system [**here**](https://github.com/zekroTJA/giveawayBot/releases) or compile it by yourself:
+Simply use the `installer.bash` script to download all required files:
+```bash
+$ curl https://raw.githubusercontent.com/zekroTJA/giveawayBot/master/installer.bash >> installer.bash && installer.bash 0.4.1
+```
+> If you want an other version, just enter the version you want instead of `0.4.1` at the end of the line. You can see all versions in [Releases Tab](https://github.com/zekroTJA/giveawayBot/releases).
+
+Or if you want to compile it by yourself:
 
 > Go installation is required for this!
 > You can download it [here](https://golang.org/dl/).
