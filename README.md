@@ -21,7 +21,7 @@ This is a little Discord bot to easily create giveaways joinable by a single cli
 
 Simply use the `installer.bash` script to download all required files:
 ```bash
-$ curl https://raw.githubusercontent.com/zekroTJA/giveawayBot/master/installer.bash >> installer.bash && installer.bash 0.4.1
+$ curl https://raw.githubusercontent.com/zekroTJA/giveawayBot/master/installer.bash >> installer.bash && bash installer.bash 0.4.1
 ```
 > If you want an other version, just enter the version you want instead of `0.4.1` at the end of the line. You can see all versions in [Releases Tab](https://github.com/zekroTJA/giveawayBot/releases).
 
