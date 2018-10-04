@@ -28,11 +28,11 @@ func main() {
 
 	//////////// COMMAND REGISTRATION ///////////
 	Cmd = NewCmdHandler(session, config, config.Data.Prefix)
-	Cmd.Register("test",     CmdTest)
-	Cmd.Register("info",     CmdInfo)
-	Cmd.Register("help",     CmdHelp)
+	Cmd.Register("test", CmdTest)
+	Cmd.Register("info", CmdInfo)
+	Cmd.Register("help", CmdHelp)
 	Cmd.Register("authroles", CmdSetAuthRoles)
-	Cmd.Register("ga",       CmdGiveaway)
+	Cmd.Register("ga", CmdGiveaway)
 	////////////////////////////////////////////
 
 	///////////// EVENT REGISTRATION ////////////

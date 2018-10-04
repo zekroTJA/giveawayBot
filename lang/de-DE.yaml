@@ -41,8 +41,11 @@ commands:
     canceled: |
       Das Giveaway wurde abgebrochen und keine Gewinner wurden ermittelt und kontaktiert.
   authrole:
-    added: |
-      Folgende rollen zu den autorisierten Rollen hinzugefügt:
+    set: |
+      Folgende Rollen wurden als authorisierte Rollen gesetzt:
+      %s
+    currently: |
+      Momentan registrierte authorisierte Rollen:
       %s
     failed: |
       Ein Fehler ist aufgetreten beim Speichern der autorisierten Rollen:

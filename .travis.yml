@@ -4,13 +4,13 @@ go:
   - tip
 
 script:
-  - go build -x -o bin/build *.go
+  - bash build.sh
 
 deploy:
   provider: releases
   skip_cleanup: true
   api_key:
     secure: e+2LnH6GD1GjTZCD4x8HJ7NKnKk8kyYRDEHmFPdpmyeojfpp5/YGUodq0SSKqXMyf6xb0W6oR3iDlQ/uZhXBqMVG9IwY3N71Io7Zww5hk7sunJcpF+pGIRdoSmO8tgDke4ScAKFzloSiRsc4gz82VQfLBxrhP1Ba7eJXfIV7hilxc06J1GC2ppJP7X9XTfbiFBkLofDcnz9OAPqaz2VVnZu0JHZ+dOKWZL7JXZRpKGr1P4HnxfHB255aShrrRNwZVLJ+aG5a7YkJAxYvcRgugaKX1I1MUHfKeVvWX4Cj/dwDwH38wa2lq2KfOy2YmqQPlSy64ATk4z4OLoh5XvfOS2lTqZpViNmR9EfYqvbJ6sycJZ+tPU4QGa04eun+vpvkpl3sGw8RztDSk8Rb9H0+ZXO98GCJ+M4jc+LraBwsFaquRwaI7gR77KyB9lTDKBYPmXuBTH6KGt0QYimNeY+8p6VT6oKEoAwKFFJuXe30rqzr/F3pVpc/r9hU7Fc63/QG2SW0TarAxhFuhkfGrHn3J7/ljXnH7J0FXqwrOE90DBdpPhJQXHpiad4E6iJAhwmPuBFoRoPfN1830NepnZgdJg8G9ckdMm7++3EvxK5xptbb5ZxTZbfWwPHixLNMTAEsBYDvPrXgNUlEPgp1mHF3bsypPaXyLapOecjtKg2HnvM=
-  file: bin/build
+  file: builds/*
   on:
     tags: true

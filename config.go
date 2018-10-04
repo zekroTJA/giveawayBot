@@ -11,6 +11,7 @@ type ConfigData struct {
 	Token      string   `yaml:"token"`
 	Prefix     string   `yaml:"prefix"`
 	Admin 	   string   `yaml:"admin"`
+	Authorized []string `yaml:"authorized"`
 	Emote      string   `yaml:"emote"`
 	Language   string   `yaml:"language"`
 }

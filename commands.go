@@ -15,12 +15,12 @@ import (
 
 var OpenGiveaways map[string]*Giveaway
 
-// CmdTest - FUnction for Test Command
+// CmdTest - Function for Test Command
 func CmdTest(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 	return nil
 }
 
-// CmdInfo - Function for Info command
+// CmdInfo - Function for Info Command
 func CmdInfo(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 	embed := &discordgo.MessageEmbed{
 		Title: "giveawayBot INFO",
@@ -58,14 +58,15 @@ func CmdInfo(s *discordgo.Session, config *Config, args []string, m *discordgo.M
 	return err
 }
 
-// CmdHelp - Function for Help cpmmand
+// CmdHelp - Function for Help Command
 func CmdHelp(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 
 	helpMsg := 	"**MISC**\n" +
 				":white_small_square:  `help`  -  Display this help message\n" + 
 				":white_small_square:  `info`  -  Display info about this bot\n" + 
-				":white_small_square:  `authroles <role1> <role2>`  -  Add roles to authorized roles\n\n" + 			
+				":white_small_square:  `authroles (<role1>) (<role2>)`  -  Set roles to authorized roles\n\n" + 			
 				"**GIVEAWAYS**\n" +  
+				":white_small_square:  `ga`    -  Create giveaway\n" +
 				":white_small_square:  `ga list`    -  List all open giveaways\n" +
 				":white_small_square:  `ga close <UID>`    -  Close a giveaway (winners will be selected)\n" +
 				":white_small_square:  `ga cancel <UID>`    -  Cancel a giveaway (no winners will be selected)\n"
@@ -80,7 +81,7 @@ func CmdHelp(s *discordgo.Session, config *Config, args []string, m *discordgo.M
 	return err
 }
 
-// CmdSetAuthRoles - Function for Setauthroles Command
+// CmdSetAuthRoles - Function for Set Authroles Command
 func CmdSetAuthRoles(s *discordgo.Session, config *Config, args []string, m *discordgo.MessageCreate, c *discordgo.Channel, a *discordgo.User, g *discordgo.Guild) error {
 	if !CheckAdmin(config, a) {
 		return errors.New("NO_PERMISSION")
@@ -90,10 +91,24 @@ func CmdSetAuthRoles(s *discordgo.Session, config *Config, args []string, m *dis
 	bData, err := ioutil.ReadFile("./.authroles.json")
 	if err == nil {
 		err = json.Unmarshal(bData, &authRoles)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	if len(args) < 1 {
+		localRoles := authRoles[g.ID]
+		for i, id := range localRoles {
+			localRoles[i] = fmt.Sprintf("<@&%s>", id)
+		}
+		roleStr := strings.Join(localRoles, ", ")
+		SendEmbed(s, c.ID, fmt.Sprintf(Lang.Commands.Authrole.Currently, roleStr))
+		return nil
 	}
 
 	var strRoles []string
 	for _, a := range args {
+		a = strings.Replace(a, ",", "", -1)
 		r, err := FetchRole(g, a)
 		if err == nil {
 			strRoles = append(strRoles, r.ID)
@@ -105,12 +120,14 @@ func CmdSetAuthRoles(s *discordgo.Session, config *Config, args []string, m *dis
 	bData, err = json.Marshal(authRoles)
 	if err == nil {
 		err = ioutil.WriteFile("./.authroles.json", bData, 0644)
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
 	if err == nil {
 		SendEmbed(s, c.ID,
-			fmt.Sprintf(Lang.Commands.Authrole.Added, func()string {
+			fmt.Sprintf(Lang.Commands.Authrole.Set, func()string {
 				marray := make([]string, len(strRoles))
 				for i, rid := range strRoles {
 					marray[i] = "<@&" + rid + ">"

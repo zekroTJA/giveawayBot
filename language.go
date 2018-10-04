@@ -25,7 +25,8 @@ type Language struct {
 			WrongGuild string
 		}
 		Authrole struct {
-			Added,
+			Set,
+			Currently,
 			Failed string
 		}
 	}

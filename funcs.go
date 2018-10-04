@@ -27,9 +27,27 @@ func SendEmbedError(session *discordgo.Session, channelID string, cont string) (
 	})
 }
 
+// CheckAdmin returns if the passed user has the same ID as the entered
+// admin ID in the config
+func CheckAdmin(config *Config, user *discordgo.User) bool {
+	return config.Data.Admin == user.ID
+}
+
 // CheckAutorized returns if the passed user has one of
 // the authorized roles
 func CheckAutorized(config *Config, guildid string, member *discordgo.Member) bool {
+	if CheckAdmin(config, member.User) {
+		return true
+	}
+
+	for _, r := range member.Roles {
+		for _, authRole := range config.Data.Authorized {
+			if r == authRole {
+				return true
+			}
+		}
+	}
+
 	authRoles := map[string][]string{}
 	bData, err := ioutil.ReadFile("./.authroles.json")
 	if err == nil {
@@ -44,12 +62,6 @@ func CheckAutorized(config *Config, guildid string, member *discordgo.Member) bo
 		}
 	}
 	return false
-}
-
-// CheckAdmin returns if the passed user has the same ID as the entered
-// admin ID in the config
-func CheckAdmin(config *Config, user *discordgo.User) bool {
-	return config.Data.Admin == user.ID
 }
 
 // FetchChannel returns a text channel fetched by pased ID, mention, name or name-part

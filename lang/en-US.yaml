@@ -41,8 +41,11 @@ commands:
     canceled: |
       The giveaway was canceled and no winner was chosen and notificated.
   authrole:
-    added: |
-      Added roles to authorized roles:
+    set: |
+      Set roles as authorized roles:
+      %s
+    currently: |
+      Currently set authorized roles:
       %s
     failed: |
       An error happend saving secondary authorized roles:
