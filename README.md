@@ -17,6 +17,35 @@ This is a little Discord bot to easily create giveaways joinable by a single cli
 
 ---
 
+# Usage
+
+> In this example, I have set the prefix to **`ga!`** in the config. You need to use the preifx you have configured, of course.
+
+With `help`, you can get help baout the usage of the bot:  
+![](https://cdn.zekro.de/ss/2018-10-05_14-52-41.png)
+
+Start a Giveaway with the command `ga`. Then, the bot will ask for further Information, like the message of the giveaway (of course with full Markdown Support like Discord supports):  
+![](https://cdn.zekro.de/ss/chrome_2018-10-05_14-55-32.png)
+
+Then, you can enter the message, the winner/s will receive:  
+![](https://cdn.zekro.de/ss/chrome_2018-10-05_15-03-15.png)
+
+After that, you can specify the number of winners which will be chosen (if less Users participate than defined as winner count, the giveaway will be invalid and no winners will be chosen):  
+![](https://cdn.zekro.de/ss/chrome_2018-10-05_15-04-33.png)
+
+Next, you need to enter a duration until the giveaway will be open:  
+![](https://cdn.zekro.de/ss/chrome_2018-10-05_15-06-33.png)
+
+Finally, you need to enter a channel to send the giveaway message into. This can be any channel resolvable (mention, ID or display name):  
+![](https://cdn.zekro.de/ss/chrome_2018-10-05_15-08-25.png)
+
+After that, the giveaway messgae will be created in the specified channel:
+![](https://cdn.zekro.de/ss/chrome_2018-10-05_15-09-02.png)
+
+> The message ID of the giveaway is the same as the giveaway ID.
+
+---
+
 # Installation
 
 Simply use the `installer.bash` script to download all required files:
