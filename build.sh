@@ -1,8 +1,5 @@
 #!/bin/bash
 
-
-#!/bin/bash
-
 TAG=$(git describe --tags)
 
 if [ ! -d builds ]; then
@@ -32,6 +29,5 @@ for BUILD in ${BUILDS[*]}; do
     fi
 
 done
-
 
 wait
